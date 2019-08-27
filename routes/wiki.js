@@ -12,13 +12,13 @@ router.get('/', function (req, res) {
 /* GET home page. */
 router.get('/file', function (req, res) {
     let page;
-    if (!req.query.page) {
+    if (!req.query.page || req.query.page === "/") {
         page = "/start";
     } else {
         page = req.query.page.toLowerCase();
     }
     const content = readFromFile(wikiPath + page + '.md');
-    if (content !== ""){
+    if (content !== "") {
         return res.json({ok: true, content: content});
     }
     res.statusCode = 400;
@@ -48,7 +48,7 @@ router.get('/structure', function (req, res) {
 
 const readFromFile = (path) => {
     if (isFile(path)) {
-        return  fs.readFileSync(path, "utf-8");
+        return fs.readFileSync(path, "utf-8");
     }
     return "";
 
@@ -60,7 +60,6 @@ const isFile = (path) => {
 const isDir = (path) => {
     return fs.existsSync(path) && (fs.lstatSync(path)).isDirectory()
 };
-
 
 
 module.exports = router;
