@@ -10,7 +10,7 @@ router.get('/file', function (req, res) {
     if (!req.query.page) {
         page = "/start";
     } else {
-        page = req.query.page;
+        page = req.query.page.toLowerCase();
     }
     fs.readFile(wikiPath + page + '.md', "utf-8", (err, data) => {
         if (!err) {
