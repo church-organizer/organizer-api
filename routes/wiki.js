@@ -17,15 +17,12 @@ router.get('/file', function (req, res) {
     } else {
         page = req.query.page.toLowerCase();
     }
-    fs.readFile(wikiPath + page + '.md', "utf-8", (err, data) => {
-        if (!err) {
-            return res.json({ok: true, content: data});
-        }
-        console.log(err);
-        res.statusCode = 400;
-        return res.json({ok: false, content: err});
-    });
-
+    const content = readFromFile(wikiPath + page + '.md');
+    if (content !== ""){
+        return res.json({ok: true, content: content});
+    }
+    res.statusCode = 400;
+    return res.json({ok: false, content: "Keine Passende Datei gefunden."});
 });
 
 
@@ -34,8 +31,7 @@ router.get('/structure', function (req, res) {
     fs.readdir(wikiPath, (error, files) => {
         if (!error) {
             for (let item of files) {
-                let stat = fs.lstatSync(wikiPath + "/" + item);
-                if (stat.isDirectory()) {
+                if (isDir(wikiPath + "/" + item)) {
                     let pages = fs.readdirSync(wikiPath + "/" + item);
                     console.log(pages);
                     structure[item] = pages;
@@ -49,6 +45,22 @@ router.get('/structure', function (req, res) {
 
 
 });
+
+const readFromFile = (path) => {
+    if (isFile(path)) {
+        return  fs.readFileSync(path, "utf-8");
+    }
+    return "";
+
+};
+
+const isFile = (path) => {
+    return fs.existsSync(path) && (fs.lstatSync(path)).isFile()
+};
+const isDir = (path) => {
+    return fs.existsSync(path) && (fs.lstatSync(path)).isDirectory()
+};
+
 
 
 module.exports = router;
