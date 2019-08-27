@@ -4,6 +4,11 @@ const fs = require('fs');
 
 const wikiPath = "./public/markdown/wiki";
 
+router.get('/', function (req, res) {
+    res.json({ok: true});
+});
+
+
 /* GET home page. */
 router.get('/file', function (req, res) {
     let page;
