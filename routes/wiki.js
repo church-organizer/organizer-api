@@ -17,6 +17,9 @@ router.get('/file', function (req, res) {
     } else {
         page = req.query.page.toLowerCase();
     }
+    if (isDir(wikiPath + page)){
+        return res.json({ok: true, content: folderContent(page)});
+    }
     const content = readFromFile(wikiPath + page + '.md');
     if (content !== "") {
         return res.json({ok: true, content: content});
@@ -47,6 +50,24 @@ router.get('/structure', function (req, res) {
 
 
 });
+
+const folderContent= (folder) => {
+    let links = "";
+    const files = getFilesFromDir(wikiPath  + folder);
+    folder = capitalize(folder.slice(1));
+    for (let item of files) {
+        let name = removeFileEnding(capitalize(item));
+        links += `- [${name}](${"/" + folder + "/" + name})\n\n`
+    }
+    return `# ${folder}\nHier sind die Unterverzeichnisse\n\n\n${links}`;
+};
+
+const getFilesFromDir = (dir) => {
+    const files = fs.readdirSync(dir);
+    files.filter(file => isFile(dir + "/" + file));
+    console.log(files);
+    return files;
+};
 
 const readFromFile = (path) => {
     if (isFile(path)) {
