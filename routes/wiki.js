@@ -33,8 +33,10 @@ router.get('/structure', function (req, res) {
             for (let item of files) {
                 if (isDir(wikiPath + "/" + item)) {
                     let pages = fs.readdirSync(wikiPath + "/" + item);
-                    console.log(pages);
-                    structure[item] = pages;
+                    for (let i = 0; i < pages.length; i++) {
+                        pages[i] = removeFileEnding(capitalize(pages[i]));
+                    }
+                    structure[capitalize(item)] = pages;
                 }
             }
         } else {
@@ -51,7 +53,17 @@ const readFromFile = (path) => {
         return fs.readFileSync(path, "utf-8");
     }
     return "";
+};
 
+const capitalize = (input) => {
+    input = input[0].toUpperCase() + input.slice(1);
+    return input;
+};
+
+const removeFileEnding = (input) => {
+    const parts = input.split(".");
+    parts.pop();
+    return parts.toString();
 };
 
 const isFile = (path) => {
