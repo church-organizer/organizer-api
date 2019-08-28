@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set header
 app.use(function(req, res, next) {
     res.header("Content-Type", "application/json");
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "*");
     next();
 });
 
