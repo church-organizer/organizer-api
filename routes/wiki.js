@@ -18,7 +18,7 @@ router.get('/file', function (req, res) {
         page = req.query.page.toLowerCase();
     }
     if (isDir(wikiPath + page)){
-        return res.json({ok: true, content: folderContent(page)});
+        return res.json({ok: true, content: folderContentLinks(page)});
     }
     const content = readFromFile(wikiPath + page + '.md');
     if (content !== "") {
@@ -31,29 +31,20 @@ router.get('/file', function (req, res) {
 
 router.get('/structure', function (req, res) {
     let structure = {};
-    fs.readdir(wikiPath, (error, files) => {
-        if (!error) {
-            for (let item of files) {
-                if (isDir(wikiPath + "/" + item)) {
-                    let pages = fs.readdirSync(wikiPath + "/" + item);
-                    for (let i = 0; i < pages.length; i++) {
-                        pages[i] = removeFileEnding(capitalize(pages[i]));
-                    }
-                    structure[capitalize(item)] = pages;
-                }
-            }
-        } else {
-            console.log(error);
-        }
-        return res.json({ok: true, structure: structure});
-    });
+    const dir = getContentFromDir(wikiPath, isDir);
+    for(let folder of dir) {
+        let folderName = capitalize(folder);
+        structure[folderName] = getContentFromDir(wikiPath + "/" + folder);
+        structure[folderName] = structure[folderName].map(item => capitalize(removeFileEnding(item)));
+    }
+    return res.json({ok: true, structure: structure});
 
 
 });
 
-const folderContent= (folder) => {
+const folderContentLinks= (folder) => {
     let links = "";
-    const files = getFilesFromDir(wikiPath  + folder);
+    const files = getContentFromDir(wikiPath  + folder);
     folder = capitalize(folder.slice(1));
     for (let item of files) {
         let name = removeFileEnding(capitalize(item));
@@ -62,11 +53,9 @@ const folderContent= (folder) => {
     return `# ${folder}\nHier sind die Unterverzeichnisse\n\n\n${links}`;
 };
 
-const getFilesFromDir = (dir) => {
-    const files = fs.readdirSync(dir);
-    files.filter(file => isFile(dir + "/" + file));
-    console.log(files);
-    return files;
+const getContentFromDir = (dir, check=isFile) => {
+    let files = fs.readdirSync(dir);
+    return files.filter(file => check(dir + "/" + file));
 };
 
 const readFromFile = (path) => {
