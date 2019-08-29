@@ -28,6 +28,26 @@ router.get('/file', function (req, res) {
     return res.json({ok: false, content: "Keine Passende Datei gefunden."});
 });
 
+router.post("/search", function (req, res) {
+    if (req.params.searchWord !== null) {
+        const result = searchInFiles(req.params.searchWord);
+        return res.json({ok: true, result: result});
+    } else {
+        res.statusCode = 400;
+        return res.json({ok: false, body: "nichts zum suchen angegeben"});
+    }
+});
+
+router.get("/search", function (req, res) {
+    if (req.query.input !== null && req.query.input !== "") {
+        let startDate = new Date();
+        const result = searchInFiles(req.query.input);
+        return res.json({ok: true, result: result, time: (new Date().getTime() - startDate.getTime()) / 1000});
+    } else {
+        return res.json({ok: true, result: {}});
+    }
+});
+
 
 router.get('/structure', function (req, res) {
     let structure = {};
@@ -41,6 +61,33 @@ router.get('/structure', function (req, res) {
 
 
 });
+
+const searchInFiles = (input) => {
+    const content = getContentFromDir(wikiPath, (input) => true); // get all content
+    let result = {};
+
+    const search = (path) => {
+        const fileContent = readFromFile(path);
+        path = removeFileEnding(path.replace(wikiPath, ""));
+        const pathParts = path.split("/");
+        const fileName = capitalize(pathParts[pathParts.length-1]);
+        if (fileContent.match(input)) {
+            result[fileName] = [path, fileContent];
+        }
+    };
+
+    for (let item of content) {
+        if (isFile(wikiPath + "/" + item)) {
+            search(wikiPath + "/" + item);
+        } else if (isDir(wikiPath + "/" + item)){
+            let folderContent = getContentFromDir(wikiPath + "/" + item, isFile);
+            for (let file of folderContent){
+                search(wikiPath + "/" + item + "/" + file);
+            }
+        }
+    }
+    return result;
+};
 
 const folderContentLinks= (folder) => {
     let links = "";
