@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set header
 app.use(function(req, res, next) {
     res.header("Content-Type", "application/json");
-    res.header("Access-Control-Allow-Origin", process.env.WIKI_HOST || "http://localhost:3000;https://loetkemann.com");
+    res.header("Access-Control-Allow-Origin", process.env.WIKI_HOST || "http://localhost:3000");
     next();
 });
 
