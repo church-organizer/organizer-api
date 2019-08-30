@@ -26,13 +26,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set header
 app.use(function(req, res, next) {
     res.header("Content-Type", "application/json");
-    console.log(process.env.WIKI_HOST);
+    const allowedHost = ["http://localhost:3000"];
     if (process.env.WIKI_HOST !== undefined) {
-
-        res.header("Access-Control-Allow-Origin", [process.env.WIKI_HOST, "http://localhost:3000"]);
-    } else {
-        res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+        allowedHost.push(process.env.WIKI_HOST);
     }
+    console.log(allowedHost);
+    res.header("Access-Control-Allow-Origin", allowedHost);
 
     next();
 });
