@@ -26,11 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set header
 app.use(function(req, res, next) {
     res.header("Content-Type", "application/json");
-    const allowedHost = ["http://localhost:3000"];
-    if (process.env.WIKI_HOST !== undefined) {
-        allowedHost.push(process.env.WIKI_HOST);
-    }
-    console.log(allowedHost);
+    const allowedHost = ["http://localhost:3000", "https://loetkemann.com"];
     res.header("Access-Control-Allow-Origin", allowedHost);
 
     next();
