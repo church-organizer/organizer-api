@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
     res.header("Content-Type", "application/json");
     if (process.env.WIKI_HOST !== undefined) {
+        console.log("Wiki-Host exitst");
         res.header("Access-Control-Allow-Origin", [process.env.WIKI_HOST, "http://localhost:3000"]);
     } else {
         res.header("Access-Control-Allow-Origin", "http://localhost:3000");
