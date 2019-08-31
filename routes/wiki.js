@@ -72,7 +72,7 @@ const searchInFiles = (input) => {
         const pathParts = path.split("/");
         const fileName = capitalize(pathParts[pathParts.length-1]);
         if (fileContent.match(input)) {
-            result[fileName] = [path, fileContent];
+            result[path] = [fileName, fileContent];
         }
     };
 
@@ -82,6 +82,7 @@ const searchInFiles = (input) => {
         } else if (isDir(wikiPath + "/" + item)){
             let folderContent = getContentFromDir(wikiPath + "/" + item, isFile);
             for (let file of folderContent){
+                console.log(file);
                 search(wikiPath + "/" + item + "/" + file);
             }
         }
