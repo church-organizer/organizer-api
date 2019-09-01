@@ -32,6 +32,7 @@ app.use(function(req, res, next) {
     // }
     // console.log(allowedHost);
     res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "content-type");
 
     next();
 });

@@ -48,6 +48,21 @@ router.get("/search", function (req, res) {
     }
 });
 
+router.post("/save", function (req, res) {
+    const filename = req.body.filename;
+    const content = req.body.content;
+    if (filename && content) {
+        if (saveFile(filename.toLowerCase(), content)) {
+            return res.json({ok: true});
+        }
+        res.statusCode = 400;
+        return res.json({ok: false, body: "Konnte die Datei nicht speichern"});
+    } else {
+        res.statusCode = 400;
+        return res.json({ok: false, body: "Nicht alle Daten sind da"});
+    }
+});
+
 
 router.get('/structure', function (req, res) {
     let structure = {};
@@ -61,6 +76,15 @@ router.get('/structure', function (req, res) {
 
 
 });
+
+const saveFile = (pathToFile, content) => {
+    const path = wikiPath + pathToFile + ".md";
+    if (isFile(path)) {
+        fs.writeFileSync(path, content);
+        return true;
+    }
+    return false;
+};
 
 const searchInFiles = (input) => {
     const content = getContentFromDir(wikiPath, (input) => true); // get all content
