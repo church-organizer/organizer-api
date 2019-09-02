@@ -98,7 +98,7 @@ const searchInFiles = (input) => {
         const fileName = capitalize(pathParts[pathParts.length-1]);
         if (fileContent.match(input)) {
             let index = fileContent.match(input).index;
-            result[path] = [fileName, fileContent.slice(index - 25, index + input.length + 25)];
+            result[path] = [fileName, "..." + fileContent.slice(index - 25, index + input.length + 25) + "..."];
         }
     };
 
