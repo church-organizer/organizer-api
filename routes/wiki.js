@@ -29,8 +29,9 @@ router.get('/file', function (req, res) {
 });
 
 router.post("/search", function (req, res) {
-    if (req.params.searchWord !== null) {
-        const result = searchInFiles(req.params.searchWord);
+    let searchWord = req.body.searchWord;
+    if (searchWord !== null) {
+        const result = searchInFiles(searchWord);
         return res.json({ok: true, result: result});
     } else {
         res.statusCode = 400;
