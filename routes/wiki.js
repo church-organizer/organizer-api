@@ -93,13 +93,28 @@ const searchInFiles = (input) => {
 
     const search = (path) => {
         const fileContent = readFromFile(path);
+        const regex = new RegExp(input, "gi");
+        const matches = fileContent.match(regex);
+        if (matches === null){
+            return
+        }
+
+        let start = 0;
+        let matchedContent= "";
+
+        for (let match of matches) {
+            let index = fileContent.indexOf(match, start);
+            let startIndex = index > 25? index-25 : 0;
+            let endIndex = index > fileContent.length -25 ? fileContent.length : index + input.length + 25;
+            matchedContent += "\n..." + fileContent.slice(startIndex,  endIndex) + "...\n";
+            start = index + input.length;
+        }
         path = removeFileEnding(path.replace(wikiPath, ""));
         const pathParts = path.split("/");
         const fileName = capitalize(pathParts[pathParts.length-1]);
-        if (fileContent.match(input)) {
-            let index = fileContent.match(input).index;
-            result[path] = [fileName, "..." + fileContent.slice(index - 25, index + input.length + 25) + "..."];
-        }
+        result[path] = [fileName, matchedContent];
+
+
     };
 
     for (let item of content) {
@@ -108,7 +123,6 @@ const searchInFiles = (input) => {
         } else if (isDir(wikiPath + "/" + item)){
             let folderContent = getContentFromDir(wikiPath + "/" + item, isFile);
             for (let file of folderContent){
-                console.log(file);
                 search(wikiPath + "/" + item + "/" + file);
             }
         }
