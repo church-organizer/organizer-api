@@ -9,7 +9,6 @@ define router here with path to file
  */
 var indexRouter = require('./routes/index');
 var wikiRouter = require('./routes/wiki');
-var imageRouter = require('./routes/images');
 
 var app = express();
 
@@ -43,7 +42,6 @@ new routes here with url
  */
 app.use('/', indexRouter);
 app.use('/wiki', wikiRouter);
-app.use('/images', imageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
