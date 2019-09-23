@@ -9,6 +9,7 @@ define router here with path to file
  */
 var indexRouter = require('./routes/index');
 var wikiRouter = require('./routes/wiki');
+var authenticateRouter = require('./routes/authentication');
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use(function(req, res, next) {
 new routes here with url
  */
 app.use('/', indexRouter);
+app.use('/authentiacte', authenticateRouter);
 app.use('/wiki', wikiRouter);
 
 // catch 404 and forward to error handler
