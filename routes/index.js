@@ -3,7 +3,10 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res) {
-    res.json({ok: true});
+    console.log("hjere i am");
+    res.json({
+        ok: true
+    });
 });
 
 module.exports = router;
