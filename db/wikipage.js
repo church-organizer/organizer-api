@@ -1,7 +1,7 @@
-import {Model} from "sequelize";
-import Sequelize from "sequelize";
-import sequelize from "./connection";
-import User from "./user"
+const Sequelize = require('sequelize');
+const Model = require('sequelize').Model;
+const sequelize = require('./connection');
+const User = require('./user');
 
 class WikiPage extends Model{}
 

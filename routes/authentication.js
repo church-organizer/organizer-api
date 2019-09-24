@@ -1,4 +1,4 @@
-import User from "../db/user";
+const User = require('../db/user');
 
 var express = require('express');
 var router = express.Router();
@@ -33,3 +33,5 @@ function authenticate(username, password) {
         return false;
     })
 }
+
+module.exports = router;
