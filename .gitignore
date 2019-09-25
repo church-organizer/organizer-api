@@ -61,3 +61,8 @@ typings/
 .next
 
 .idea
+
+*.png
+*.jpg
+*.gif
+*.jpeg
