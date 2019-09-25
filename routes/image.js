@@ -20,7 +20,7 @@ var Storage = multer.diskStorage({
 var upload = multer({
     storage: Storage,
     fileFilter(req, file, callback) {
-        if (accepedMimeTypes.indexOf(file.mimetype)>=0) {
+        if (accepedMimeTypes.indexOf(file.mimetype) >= 0) {
             callback(null, true);
         } else {
             req.fileValidationError = 'Wrong mimetype';
@@ -35,21 +35,25 @@ router.post("/", function (req, res) {
         if (err) {
             return res.status(400).json({ok: false, message: err});
         }
-        if(!req.files ||  req.files.length === 0){
+        if (!req.files || req.files.length === 0) {
             return res.status(400).json({ok: false, message: "kein Bild gefunden"});
         }
-        return res.json({ok:true})
+        return res.json({ok: true})
     })
 });
 
 router.get("/:name", function (req, res) {
-
     const filename = req.params.name;
-    const file  = fs.readFileSync(path + "/" + filename);
-    let type = filename.split(".");
-    type = type[type.length];
-    res.header({ 'Content-Type': 'image/'+ type,});
-    return res.send(file);
+    try {
+        const file = fs.readFileSync(path + "/" + filename);
+        let type = filename.split(".");
+        type = type[type.length];
+        res.header({'Content-Type': 'image/' + type,});
+        return res.send(file);
+    } catch (e) {
+        return res.status(404).json({ok: false, message: "Datei nicht gefunden."});
+    }
+
 });
 
 

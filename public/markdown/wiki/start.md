@@ -8,6 +8,8 @@ test
 
 ![beispiel](background.jpg)
 
+![logo](logo.png)
+
 >test
 
 1. asd
