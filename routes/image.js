@@ -43,10 +43,13 @@ router.post("/", function (req, res) {
 });
 
 router.get("/:name", function (req, res) {
-    const file  = fs.readFileSync(path);
-    console.log(file);
+
     const filename = req.params.name;
-    return res.json({ok: true});
+    const file  = fs.readFileSync(path + "/" + filename);
+    let type = filename.split(".");
+    type = type[type.length];
+    res.header({ 'Content-Type': 'image/'+ type,});
+    return res.send(file);
 });
 
 
