@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require('dotenv').config();
 
 /*
 define router here with path to file
@@ -10,6 +11,7 @@ define router here with path to file
 var indexRouter = require('./routes/index');
 var wikiRouter = require('./routes/wiki');
 var imageRouter = require('./routes/image');
+var loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -20,12 +22,14 @@ app.set('Content-Type', 'application/json');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({
+    extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // set header
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Content-Type", "application/json");
     // const allowedHost = ["http://localhost:3000"];
     // if (process.env.WIKI_HOST !== undefined) {
@@ -42,6 +46,7 @@ app.use(function(req, res, next) {
 new routes here with url
  */
 app.use('/', indexRouter);
+app.use('/login', loginRouter);
 app.use('/wiki', wikiRouter);
 app.use('/image', imageRouter);
 
