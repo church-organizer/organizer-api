@@ -42,6 +42,13 @@ router.post("/", function (req, res) {
     })
 });
 
+
+// todo return all images as list with the name
+// should be displayed to select one of the existing images
+router.get("/all", function (req, res) {
+    return res.json({ok: true, images: [""]});
+});
+
 router.get("/:name", function (req, res) {
     const filename = req.params.name;
     try {
@@ -55,10 +62,5 @@ router.get("/:name", function (req, res) {
     }
 
 });
-
-router.get("/all", function (req, res) {
-
-});
-
 
 module.exports = router;
