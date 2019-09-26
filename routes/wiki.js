@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const fs = require('fs');
 
-const wikiPath = "./public/markdown/wiki";
+const wikiPath = "./files/markdown/wiki";
 
 router.get('/', function (req, res) {
     res.json({ok: true});

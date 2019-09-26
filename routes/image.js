@@ -56,5 +56,9 @@ router.get("/:name", function (req, res) {
 
 });
 
+router.get("/all", function (req, res) {
+
+});
+
 
 module.exports = router;

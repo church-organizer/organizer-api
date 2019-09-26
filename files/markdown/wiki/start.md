@@ -6,7 +6,9 @@ test
 ```
 - asd
 
-![](background.jpg)
+![beispiel](background.jpg)
+
+![logo](logo.png)
 
 >test
 
