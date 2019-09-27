@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const fs = require('fs');
 var multer = require('multer');
+const auth = require('./middleware/authentication');
 
 const accepedMimeTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png"];
 const path = "./files/images";
@@ -30,23 +31,34 @@ var upload = multer({
 }).array("image", 1); //Field name and max count
 
 
-router.post("/", function (req, res) {
+router.post("/", auth, function (req, res) {
     upload(req, res, function (err) {
         if (err) {
-            return res.status(400).json({ok: false, message: err});
+            return res.status(400).json({
+                ok: false,
+                message: err
+            });
         }
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ok: false, message: "kein Bild gefunden"});
+            return res.status(400).json({
+                ok: false,
+                message: "kein Bild gefunden"
+            });
         }
-        return res.json({ok: true})
+        return res.json({
+            ok: true
+        })
     })
 });
 
 
 // todo return all images as list with the name
 // should be displayed to select one of the existing images
-router.get("/all", function (req, res) {
-    return res.json({ok: true, images: [""]});
+router.get("/all", auth, function (req, res) {
+    return res.json({
+        ok: true,
+        images: [""]
+    });
 });
 
 router.get("/:name", function (req, res) {
@@ -55,10 +67,15 @@ router.get("/:name", function (req, res) {
         const file = fs.readFileSync(path + "/" + filename);
         let type = filename.split(".");
         type = type[type.length];
-        res.header({'Content-Type': 'image/' + type,});
+        res.header({
+            'Content-Type': 'image/' + type,
+        });
         return res.send(file);
     } catch (e) {
-        return res.status(404).json({ok: false, message: "Datei nicht gefunden."});
+        return res.status(404).json({
+            ok: false,
+            message: "Datei nicht gefunden."
+        });
     }
 
 });

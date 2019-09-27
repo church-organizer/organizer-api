@@ -1,11 +1,14 @@
 var express = require('express');
 var router = express.Router();
 const fs = require('fs');
+const auth = require('./middleware/authentication');
 
 const wikiPath = "./files/markdown/wiki";
 
 router.get('/', function (req, res) {
-    res.json({ok: true});
+    res.json({
+        ok: true
+    });
 });
 
 
@@ -17,25 +20,40 @@ router.get('/file', function (req, res) {
     } else {
         page = req.query.page.toLowerCase();
     }
-    if (isDir(wikiPath + page)){
-        return res.json({ok: true, content: folderContentLinks(page)});
+    if (isDir(wikiPath + page)) {
+        return res.json({
+            ok: true,
+            content: folderContentLinks(page)
+        });
     }
     const content = readFromFile(wikiPath + page + '.md');
     if (content !== "") {
-        return res.json({ok: true, content: content});
+        return res.json({
+            ok: true,
+            content: content
+        });
     }
     res.statusCode = 400;
-    return res.json({ok: false, content: "Keine Passende Datei gefunden."});
+    return res.json({
+        ok: false,
+        content: "Keine Passende Datei gefunden."
+    });
 });
 
 router.post("/search", function (req, res) {
     let searchWord = req.body.searchWord;
     if (searchWord !== null) {
         const result = searchInFiles(searchWord);
-        return res.json({ok: true, result: result});
+        return res.json({
+            ok: true,
+            result: result
+        });
     } else {
         res.statusCode = 400;
-        return res.json({ok: false, body: "nichts zum suchen angegeben"});
+        return res.json({
+            ok: false,
+            body: "nichts zum suchen angegeben"
+        });
     }
 });
 
@@ -43,24 +61,39 @@ router.get("/search", function (req, res) {
     if (req.query.input !== null && req.query.input !== "") {
         let startDate = new Date();
         const result = searchInFiles(req.query.input);
-        return res.json({ok: true, result: result, time: (new Date().getTime() - startDate.getTime()) / 1000});
+        return res.json({
+            ok: true,
+            result: result,
+            time: (new Date().getTime() - startDate.getTime()) / 1000
+        });
     } else {
-        return res.json({ok: true, result: {}});
+        return res.json({
+            ok: true,
+            result: {}
+        });
     }
 });
 
-router.post("/save", function (req, res) {
+router.post("/save", auth, function (req, res) {
     const filename = req.body.filename;
     const content = req.body.content;
     if (filename && content) {
         if (saveFile(filename.toLowerCase(), content)) {
-            return res.json({ok: true});
+            return res.json({
+                ok: true
+            });
         }
         res.statusCode = 400;
-        return res.json({ok: false, body: "Konnte die Datei nicht speichern"});
+        return res.json({
+            ok: false,
+            body: "Konnte die Datei nicht speichern"
+        });
     } else {
         res.statusCode = 400;
-        return res.json({ok: false, body: "Nicht alle Daten sind da"});
+        return res.json({
+            ok: false,
+            body: "Nicht alle Daten sind da"
+        });
     }
 });
 
@@ -68,12 +101,15 @@ router.post("/save", function (req, res) {
 router.get('/structure', function (req, res) {
     let structure = {};
     const dir = getContentFromDir(wikiPath, isDir);
-    for(let folder of dir) {
+    for (let folder of dir) {
         let folderName = capitalize(folder);
         structure[folderName] = getContentFromDir(wikiPath + "/" + folder);
         structure[folderName] = structure[folderName].map(item => capitalize(removeFileEnding(item)));
     }
-    return res.json({ok: true, structure: structure});
+    return res.json({
+        ok: true,
+        structure: structure
+    });
 
 
 });
@@ -95,23 +131,23 @@ const searchInFiles = (input) => {
         const fileContent = readFromFile(path);
         const regex = new RegExp(input, "gi");
         const matches = fileContent.match(regex);
-        if (matches === null){
+        if (matches === null) {
             return
         }
 
         let start = 0;
-        let matchedContent= "";
+        let matchedContent = "";
 
         for (let match of matches) {
             let index = fileContent.indexOf(match, start);
-            let startIndex = index > 25? index-25 : 0;
-            let endIndex = index > fileContent.length -25 ? fileContent.length : index + input.length + 25;
-            matchedContent += "\n..." + fileContent.slice(startIndex,  endIndex) + "...\n";
+            let startIndex = index > 25 ? index - 25 : 0;
+            let endIndex = index > fileContent.length - 25 ? fileContent.length : index + input.length + 25;
+            matchedContent += "\n..." + fileContent.slice(startIndex, endIndex) + "...\n";
             start = index + input.length;
         }
         path = removeFileEnding(path.replace(wikiPath, ""));
         const pathParts = path.split("/");
-        const fileName = capitalize(pathParts[pathParts.length-1]);
+        const fileName = capitalize(pathParts[pathParts.length - 1]);
         result[path] = [fileName, matchedContent];
 
 
@@ -120,9 +156,9 @@ const searchInFiles = (input) => {
     for (let item of content) {
         if (isFile(wikiPath + "/" + item)) {
             search(wikiPath + "/" + item);
-        } else if (isDir(wikiPath + "/" + item)){
+        } else if (isDir(wikiPath + "/" + item)) {
             let folderContent = getContentFromDir(wikiPath + "/" + item, isFile);
-            for (let file of folderContent){
+            for (let file of folderContent) {
                 search(wikiPath + "/" + item + "/" + file);
             }
         }
@@ -130,9 +166,9 @@ const searchInFiles = (input) => {
     return result;
 };
 
-const folderContentLinks= (folder) => {
+const folderContentLinks = (folder) => {
     let links = "";
-    const files = getContentFromDir(wikiPath  + folder);
+    const files = getContentFromDir(wikiPath + folder);
     folder = capitalize(folder.slice(1));
     for (let item of files) {
         let name = removeFileEnding(capitalize(item));
@@ -141,7 +177,7 @@ const folderContentLinks= (folder) => {
     return `# ${folder}\nHier sind die Unterverzeichnisse\n\n\n${links}`;
 };
 
-const getContentFromDir = (dir, check=isFile) => {
+const getContentFromDir = (dir, check = isFile) => {
     let files = fs.readdirSync(dir);
     return files.filter(file => check(dir + "/" + file));
 };
@@ -173,4 +209,3 @@ const isDir = (path) => {
 
 
 module.exports = router;
-

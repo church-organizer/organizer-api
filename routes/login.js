@@ -5,42 +5,32 @@ const bcrypt = require('bcryptjs');
 const secret = process.env.JWT_SECRET;
 const hashed = process.env.HASHED_PWD;
 
-function makeAccessToken(name) {
-    // expires in 24 hours
-    return jwt.sign({
-        user: name
-    }, secret, {
+function makeAccessToken(username) {
+    var payload = {
+        username: username
+    }
+    var signOptions = {
         expiresIn: '1d'
-    });
-}
-
-function verifyAccessToken(accessToken) {
-    jwt.verify(accessToken, secret, (err, decoded) => {
-        if (err) {
-            return false
-        }
-        return true;
-    });
+    }
+    // expires in 24 hours
+    return jwt.sign(payload, secret, signOptions);
 }
 
 /* GET home page. */
 router.post('/', function (req, res, next) {
-    const name = req.body.name;
+    const username = req.body.username;
     const password = req.body.password;
     const match = bcrypt.compareSync(password, hashed);
 
     if (match) {
-        res.locals.accessToken = makeAccessToken(name);
-        next();
+        const token = makeAccessToken(username);
+        return res.status(200).json({
+            'username': username,
+            'jwt': token
+        })
+    } else {
+        return res.status(401).send("Wrong name or password");
     }
-});
-
-/* return new token */
-router.post('/', function (req, res) {
-    res.status(200).json({
-        'user': req.body.name,
-        'access-token': res.locals.accessToken
-    })
 });
 
 module.exports = router;

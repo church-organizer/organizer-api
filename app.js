@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 require('dotenv').config();
 
 /*
@@ -12,8 +13,10 @@ var indexRouter = require('./routes/index');
 var wikiRouter = require('./routes/wiki');
 var imageRouter = require('./routes/image');
 var loginRouter = require('./routes/login');
+var authenticationRouter = require('./routes/authenticate');
 
 var app = express();
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,11 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set header
 app.use(function (req, res, next) {
     res.header("Content-Type", "application/json");
-    // const allowedHost = ["http://localhost:3000"];
-    // if (process.env.WIKI_HOST !== undefined) {
-    //     allowedHost.push(process.env.WIKI_HOST);
-    // }
-    // console.log(allowedHost);
+    const allowedHost = ["http://localhost:3000"];
+    if (process.env.WIKI_HOST !== undefined) {
+        allowedHost.push(process.env.WIKI_HOST);
+    }
+    console.log(allowedHost);
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "content-type");
 
@@ -49,9 +52,10 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/wiki', wikiRouter);
 app.use('/image', imageRouter);
+app.use('/authenticate', authenticationRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.post(function (req, res, next) {
     next(createError(404));
 });
 
